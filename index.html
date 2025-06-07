@@ -87,7 +87,7 @@
         </div>
 
         <div class="input-group">
-            <label for="footer-elevation-basement">Slab Elevation:</label>
+            <label for="footer-elevation-basement">Desired Footer Elevation:</label>
             <input id="footer-elevation-basement" class="input-field" type="number" step="0.01" placeholder="e.g., 803.56">
             <span style="margin-left:5px;">ft</span>
         </div>
@@ -344,7 +344,8 @@
             document.getElementById('difference-decimal-basement').textContent = difference.toFixed(2) + ' ft';
             document.getElementById('grade-rod-setting-basement').textContent = decimalToFeetInches(newGradeRod);
             document.getElementById('slab-height-basement').textContent = decimalToFeetInches(newGradeRod);
-            document.getElementById('sub-grade-basement').textContent = decimalToFeetInches(newGradeRod - 1);
+            // FIXED: Sub grade calculation - now properly 1 foot lower than footer
+            document.getElementById('sub-grade-basement').textContent = decimalToFeetInches(newGradeRod + 1);
             
             document.getElementById('basement-results').style.display = 'block';
         }
