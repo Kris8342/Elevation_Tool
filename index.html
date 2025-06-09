@@ -34,6 +34,13 @@
         .two-column     {display:grid;grid-template-columns:1fr 1fr;gap:20px}
         @media (max-width:600px){.two-column{grid-template-columns:1fr}.radio-group{flex-direction:column}}
         @media print    {.no-print{display:none}body{margin:0}.form-container{border:none;padding:0}}
+        /* Additional styling for new sections */
+        .result-box-alt {background:#e3f2fd;border:2px solid #2196F3;padding:15px;border-radius:5px;
+                         margin:10px 0;font-size:18px;font-weight:bold}
+        .small-input {width:80px;}
+        .rebar-table {width:100%; border-collapse: collapse; margin-top:10px;}
+        .rebar-table th, .rebar-table td {border: 1px solid #ccc; padding: 8px; text-align:center;}
+        .rebar-table th {background-color: #f0f0f0;}
     </style>
 </head>
 <body>
@@ -59,6 +66,14 @@
         <div class="radio-item">
             <input type="radio" id="diagonal-calc" name="footer-type" value="diagonal" onchange="toggleFooterType()">
             <label for="diagonal-calc" style="min-width:auto;">Diagonal Calculator</label>
+        </div>
+        <div class="radio-item">
+            <input type="radio" id="concrete-calc" name="footer-type" value="concrete" onchange="toggleFooterType()">
+            <label for="concrete-calc" style="min-width:auto;">Concrete Calculator</label>
+        </div>
+        <div class="radio-item">
+            <input type="radio" id="rebar-calc" name="footer-type" value="rebar" onchange="toggleFooterType()">
+            <label for="rebar-calc" style="min-width:auto;">Rebar Calculator</label>
         </div>
     </div>
 
@@ -221,6 +236,130 @@
         </div>
     </div>
 
+    <!-- CONCRETE CALCULATOR SECTION -->
+    <div id="concrete-section" class="section" style="display:none;">
+        <div class="section-title">Concrete Calculator</div>
+        <div class="instructions">
+            Enter depth, width, and length to calculate concrete volume in cubic yards. 
+            Also calculate pier count with adjustable pier size (default 2.25 ft x 2.25 ft x 12" deep).
+        </div>
+
+        <div class="input-group">
+            <label for="concrete-depth">Depth:</label>
+            <input id="concrete-depth-ft" class="input-field small-input" type="number" step="0.01" placeholder="feet">
+            <span style="margin:0 5px;">ft</span>
+            <input id="concrete-depth-in" class="input-field small-input" type="number" step="1" placeholder="inches">
+            <span style="margin:0 5px;">in</span>
+        </div>
+
+        <div class="input-group">
+            <label for="concrete-width">Width:</label>
+            <input id="concrete-width-ft" class="input-field small-input" type="number" step="0.01" placeholder="feet">
+            <span style="margin:0 5px;">ft</span>
+            <input id="concrete-width-in" class="input-field small-input" type="number" step="1" placeholder="inches">
+            <span style="margin:0 5px;">in</span>
+        </div>
+
+        <div class="input-group">
+            <label for="concrete-length">Length:</label>
+            <input id="concrete-length-ft" class="input-field small-input" type="number" step="0.01" placeholder="feet">
+            <span style="margin:0 5px;">ft</span>
+            <input id="concrete-length-in" class="input-field small-input" type="number" step="1" placeholder="inches">
+            <span style="margin:0 5px;">in</span>
+        </div>
+
+        <hr style="margin:15px 0;">
+
+        <div class="input-group">
+            <label for="pier-count">Pier Count:</label>
+            <input id="pier-count" class="input-field small-input" type="number" step="1" min="1" value="1" style="width:100px;">
+        </div>
+
+        <div class="input-group">
+            <label>Pier Size (W x L x D):</label>
+            <input id="pier-width" class="input-field small-input" type="number" step="0.01" min="0" value="2.25" style="width:80px;">
+            <span style="margin:0 5px;">ft</span>
+            <input id="pier-length" class="input-field small-input" type="number" step="0.01" min="0" value="2.25" style="width:80px;">
+            <span style="margin:0 5px;">ft</span>
+            <input id="pier-depth" class="input-field small-input" type="number" step="0.01" min="0" value="12" style="width:80px;">
+            <span style="margin:0 5px;">in</span>
+        </div>
+
+        <button class="calc-button" onclick="calculateConcrete()">Calculate Concrete & Piers</button>
+
+        <div id="concrete-results" style="display:none;">
+            <div class="result-box-alt">
+                <div>Total Concrete Volume:</div>
+                <div id="concrete-volume">-</div>
+            </div>
+            <div class="result-box-alt">
+                <div>Total Pier Volume:</div>
+                <div id="pier-volume">-</div>
+            </div>
+            <div class="result-box-alt">
+                <div>Total Concrete Volume + Piers:</div>
+                <div id="total-volume">-</div>
+            </div>
+        </div>
+    </div>
+
+<!-- REBAR CALCULATOR SECTION -->
+<div id="rebar-section" class="section" style="display:none;">
+    <div class="section-title">Rebar Calculator</div>
+    <div class="instructions">
+        Calculate total number of 20 ft rebar sticks needed with 2 ft overlap at each end. 
+        Add crossbars and uprights with adjustable lengths and counts. Waste length is calculated from leftover pieces.
+    </div>
+
+    <div class="input-group">
+        <label for="total-linear-ft">Total Linear Feet of Rebar Needed:</label>
+        <input id="total-linear-ft" class="input-field small-input" type="number" step="0.01" min="0" placeholder="e.g., 100">
+        <span style="margin-left:5px;">ft</span>
+    </div>
+
+    <div class="input-group">
+        <label>Rebar Stick Length:</label>
+        <input id="rebar-stick-length-ft" class="input-field small-input" type="number" step="0.01" min="0" value="20" style="width:80px;">
+        <span style="margin:0 5px;">ft</span>
+    </div>
+
+    <div class="input-group">
+        <label>Overlap at Each End:</label>
+        <input id="rebar-overlap-ft" class="input-field small-input" type="number" step="0.01" min="0" value="2" style="width:80px;">
+        <span style="margin:0 5px;">ft</span>
+    </div>
+
+    <hr style="margin:15px 0;">
+
+    <div class="section-title" style="font-size:16px; margin-bottom:10px;">Crossbars</div>
+    <div id="crossbars-container"></div>
+    <button class="calc-button" style="background:#4caf50;" onclick="addCrossbar()">Add Crossbar</button>
+
+    <hr style="margin:15px 0;">
+
+    <div class="section-title" style="font-size:16px; margin-bottom:10px;">Uprights</div>
+    <div id="uprights-container"></div>
+    <button class="calc-button" style="background:#4caf50;" onclick="addUpright()">Add Upright</button>
+
+    <button class="calc-button" onclick="calculateRebar()">Calculate Rebar</button>
+
+    <div id="rebar-results" style="display:none;">
+        <div class="result-box-alt">
+            <div>Total Rebar Length Required:</div>
+            <div id="total-rebar-length">-</div>
+        </div>
+        <div class="result-box-alt">
+            <div>Total 20 ft Rebar Sticks Needed:</div>
+            <div id="total-rebar-sticks">-</div>
+        </div>
+        <div class="result-box-alt">
+            <div>Actual Waste Length:</div>
+            <div id="waste-length">-</div>
+        </div>
+    </div>
+</div>
+
+
     <div id="error-message" class="error-box" style="display:none;"></div>
 
     <!-- JAVASCRIPT -->
@@ -260,6 +399,10 @@
                 select.innerHTML = fractionOptions;
                 select.value = "0"; // default to 0
             });
+
+            // Initialize first crossbar and upright inputs
+            addCrossbar();
+            addUpright();
         });
 
         function toggleFooterType() {
@@ -267,6 +410,8 @@
             document.getElementById('basement-section').style.display = footerType === 'basement' ? 'block' : 'none';
             document.getElementById('block-section').style.display = footerType === 'block' ? 'block' : 'none';
             document.getElementById('diagonal-section').style.display = footerType === 'diagonal' ? 'block' : 'none';
+            document.getElementById('concrete-section').style.display = footerType === 'concrete' ? 'block' : 'none';
+            document.getElementById('rebar-section').style.display = footerType === 'rebar' ? 'block' : 'none';
             hideError();
         }
 
@@ -317,6 +462,7 @@
             return decimal;
         }
 
+        // Basement Footer Calculation
         function calculateBasement() {
             hideError();
             
@@ -350,6 +496,7 @@
             document.getElementById('basement-results').style.display = 'block';
         }
 
+        // Block Footer Calculation
         function calculateBlock() {
             hideError();
             
@@ -392,6 +539,7 @@
             document.getElementById('block-results').style.display = 'block';
         }
 
+        // Diagonal Calculator
         function calculateDiagonal() {
             hideError();
             
@@ -421,6 +569,205 @@
             
             document.getElementById('diagonal-results').style.display = 'block';
         }
+
+        // Concrete Calculator
+        function calculateConcrete() {
+            hideError();
+
+            // Get depth, width, length inputs in feet (convert inches to feet)
+            const depthFt = parseFloat(document.getElementById('concrete-depth-ft').value) || 0;
+            const depthIn = parseFloat(document.getElementById('concrete-depth-in').value) || 0;
+            const widthFt = parseFloat(document.getElementById('concrete-width-ft').value) || 0;
+            const widthIn = parseFloat(document.getElementById('concrete-width-in').value) || 0;
+            const lengthFt = parseFloat(document.getElementById('concrete-length-ft').value) || 0;
+            const lengthIn = parseFloat(document.getElementById('concrete-length-in').value) || 0;
+
+            if(depthFt < 0 || depthIn < 0 || widthFt < 0 || widthIn < 0 || lengthFt < 0 || lengthIn < 0){
+                showError('Please enter non-negative values for dimensions.');
+                return;
+            }
+
+            const depth = depthFt + (depthIn / 12);
+            const width = widthFt + (widthIn / 12);
+            const length = lengthFt + (lengthIn / 12);
+
+            if(depth === 0 || width === 0 || length === 0){
+                showError('Depth, width, and length must all be greater than zero.');
+                return;
+            }
+
+            // Calculate concrete volume in cubic feet
+            const volumeCubicFeet = depth * width * length;
+
+            // Convert to cubic yards (1 cubic yard = 27 cubic feet)
+            const volumeCubicYards = volumeCubicFeet / 27;
+
+            // Pier count and size
+            const pierCount = parseInt(document.getElementById('pier-count').value) || 0;
+            if(pierCount < 0){
+                showError('Pier count must be zero or more.');
+                return;
+            }
+
+            const pierWidthFt = parseFloat(document.getElementById('pier-width').value);
+            const pierLengthFt = parseFloat(document.getElementById('pier-length').value);
+            const pierDepthIn = parseFloat(document.getElementById('pier-depth').value);
+
+            if(pierWidthFt <= 0 || pierLengthFt <= 0 || pierDepthIn <= 0){
+                showError('Pier dimensions must be greater than zero.');
+                return;
+            }
+
+            // Convert pier depth from inches to feet
+            const pierDepthFt = pierDepthIn / 12;
+
+            // Pier volume in cubic feet
+            const pierVolumeCubicFeet = pierWidthFt * pierLengthFt * pierDepthFt;
+
+            // Total pier volume in cubic feet
+            const totalPierVolumeCubicFeet = pierVolumeCubicFeet * pierCount;
+
+            // Convert pier volume to cubic yards
+            const totalPierVolumeCubicYards = totalPierVolumeCubicFeet / 27;
+
+            // Total concrete volume including piers
+            const totalVolumeCubicYards = volumeCubicYards + totalPierVolumeCubicYards;
+
+            // Display results
+            document.getElementById('concrete-volume').textContent = volumeCubicYards.toFixed(3) + ' cubic yards';
+            document.getElementById('pier-volume').textContent = totalPierVolumeCubicYards.toFixed(3) + ' cubic yards';
+            document.getElementById('total-volume').textContent = totalVolumeCubicYards.toFixed(3) + ' cubic yards';
+
+            document.getElementById('concrete-results').style.display = 'block';
+        }
+
+        // Rebar Calculator Helpers
+        function addCrossbar() {
+            const container = document.getElementById('crossbars-container');
+            const div = document.createElement('div');
+            div.className = 'input-group';
+            div.innerHTML = `
+                <label>Crossbar Length (ft):</label>
+                <input type="number" min="0" step="0.01" class="input-field small-input crossbar-length" placeholder="Length" style="width:100px;">
+                <label style="margin-left:10px;">Count:</label>
+                <input type="number" min="0" step="1" class="input-field small-input crossbar-count" placeholder="Count" style="width:80px;">
+                <button type="button" style="margin-left:10px; background:#f44336; color:#fff; border:none; border-radius:4px; cursor:pointer;" onclick="removeElement(this)">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addUpright() {
+            const container = document.getElementById('uprights-container');
+            const div = document.createElement('div');
+            div.className = 'input-group';
+            div.innerHTML = `
+                <label>Upright Length (ft):</label>
+                <input type="number" min="0" step="0.01" class="input-field small-input upright-length" placeholder="Length" style="width:100px;">
+                <label style="margin-left:10px;">Count:</label>
+                <input type="number" min="0" step="1" class="input-field small-input upright-count" placeholder="Count" style="width:80px;">
+                <button type="button" style="margin-left:10px; background:#f44336; color:#fff; border:none; border-radius:4px; cursor:pointer;" onclick="removeElement(this)">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeElement(button) {
+            button.parentElement.remove();
+        }
+
+// Rebar Calculator
+function calculateRebar() {
+    hideError();
+
+    const baseLinearFtInput = parseFloat(document.getElementById('total-linear-ft').value);
+    const stickLength = parseFloat(document.getElementById('rebar-stick-length-ft').value);
+    const overlap = parseFloat(document.getElementById('rebar-overlap-ft').value);
+
+    if(isNaN(baseLinearFtInput) || baseLinearFtInput <= 0){
+        showError('Please enter a valid total linear feet of rebar needed.');
+        return;
+    }
+    if(isNaN(stickLength) || stickLength <= 0){
+        showError('Please enter a valid rebar stick length.');
+        return;
+    }
+    if(isNaN(overlap) || overlap < 0){
+        showError('Please enter a valid overlap length.');
+        return;
+    }
+
+    // Multiply base linear feet by 2 bars (default assumption)
+    const baseBarsCount = 2;
+    const baseLinearFt = baseLinearFtInput * baseBarsCount;
+
+    // Effective length per stick = stick length - 2 * overlap (for continuous bars)
+    const effectiveLengthPerStick = stickLength - 2 * overlap;
+    if(effectiveLengthPerStick <= 0){
+        showError('Overlap is too large compared to stick length.');
+        return;
+    }
+
+    // Calculate sticks needed for base rebar (with overlaps)
+    const sticksForBase = Math.ceil(baseLinearFt / effectiveLengthPerStick);
+
+    // Sum crossbars length * count
+    let crossbarsLengthTotal = 0;
+    let crossbarsWasteTotal = 0;
+    document.querySelectorAll('.crossbar-length').forEach((input, idx) => {
+        const length = parseFloat(input.value) || 0;
+        const count = parseInt(document.querySelectorAll('.crossbar-count')[idx].value) || 0;
+        if(length > 0 && count > 0){
+            crossbarsLengthTotal += length * count;
+            
+            // Calculate waste for crossbars (cut from 20 ft sticks)
+            const sticksNeeded = Math.ceil((length * count) / stickLength);
+            const totalLengthUsed = sticksNeeded * stickLength;
+            const waste = totalLengthUsed - (length * count);
+            crossbarsWasteTotal += waste;
+        }
+    });
+
+    // Sum uprights length * count
+    let uprightsLengthTotal = 0;
+    let uprightsWasteTotal = 0;
+    document.querySelectorAll('.upright-length').forEach((input, idx) => {
+        const length = parseFloat(input.value) || 0;
+        const count = parseInt(document.querySelectorAll('.upright-count')[idx].value) || 0;
+        if(length > 0 && count > 0){
+            uprightsLengthTotal += length * count;
+            
+            // Calculate sticks and waste for uprights
+            const sticksNeeded = Math.ceil((length * count) / stickLength);
+            const totalLengthUsed = sticksNeeded * stickLength;
+            const waste = totalLengthUsed - (length * count);
+            uprightsWasteTotal += waste;
+        }
+    });
+
+    // Total rebar length needed (excluding overlaps since they're required)
+    const totalRebarLengthNeeded = baseLinearFt + crossbarsLengthTotal + uprightsLengthTotal;
+
+    // Calculate sticks needed for base rebar (with overlaps)
+    const sticksForBaseRebar = Math.ceil(baseLinearFt / effectiveLengthPerStick);
+    
+    // Calculate sticks needed for uprights (without overlaps)
+    const sticksForUprights = Math.ceil(uprightsLengthTotal / stickLength);
+    
+    // Calculate sticks needed for crossbars (without overlaps)
+    const sticksForCrossbars = Math.ceil(crossbarsLengthTotal / stickLength);
+
+    // Total sticks needed
+    const totalSticksNeeded = sticksForBaseRebar + sticksForUprights + sticksForCrossbars;
+
+    // Calculate actual waste (leftover pieces only)
+    const totalWaste = crossbarsWasteTotal + uprightsWasteTotal;
+
+    // Display results
+    document.getElementById('total-rebar-length').textContent = totalRebarLengthNeeded.toFixed(2) + ' ft';
+    document.getElementById('total-rebar-sticks').textContent = totalSticksNeeded;
+    document.getElementById('waste-length').textContent = totalWaste.toFixed(2) + ' ft';
+
+    document.getElementById('rebar-results').style.display = 'block';
+}
 
         // Enter key navigation
         document.addEventListener('keydown', e => {
